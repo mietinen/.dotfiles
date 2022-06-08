@@ -2,57 +2,71 @@
 
 url_ssh="git@github.com:mietinen/.dotfiles.git"
 url_https="https://github.com/mietinen/.dotfiles.git"
-dot_dirs=(shell desktop private)
 
 _usage() {
     cat <<EOF
 optional args:
-  ${0} install        Install dotfiles
-  ${0} uninstall      Uninstall dotfiles
-  ${0} pull           Git pull with submodule
-  ${0} ssh            change git origin to use SSH
-  ${0} https          Change git origin to use HTTPS
+  ${0} install      Install dotfiles
+  ${0} uninstall    Uninstall dotfiles
+  ${0} pull         Update using git pull --recurse-submodules
+  ${0} sub          Initialize submodules
+  ${0} ssh          change git origin to use SSH
+  ${0} https        Change git origin to use HTTPS
 EOF
 }
 
 _install() {
-    for dir in "${dot_dirs[@]}"; do
-        read -rep "Install $dir config files? [y/N] " install
-        [ "$install" = "${install#[Yy]}" ] && continue
-        if [[ "$(git submodule status "$dir")" == -* ]]; then
-            git submodule --quiet update --init "$dir"
-        fi
+    if ! command -v stow >/dev/null; then
+        echo "GNU Stow is not found, files will be copied to \$HOME instead."
+        echo
+    fi
+    git pull --quiet --recurse-submodules
+    for dir in */; do
+        # check if dir not empty, submodule not initialized?
+        [ "$(find "$dir" -mindepth 1 | wc -l)" -le 0 ] && continue
+
         if command -v stow >/dev/null; then
             stow -nt "$HOME" "$dir" 2>&1 | grep "^\s" | awk 'NF>1{print $NF}' | xargs -I{} rm -f "$HOME/{}"
             stow -t "$HOME" "$dir"
         else
             cp -rfT "$dir" "$HOME"
+            rm -f "$HOME/.git" 2>/dev/null
         fi
         echo
     done
 }
 
 _uninstall() {
-    for dir in "${dot_dirs[@]}"; do
-        read -rep "Uninstall $dir config files? [y/N] " install
-        [ "$install" = "${install#[Yy]}" ] && continue
-        if command -v stow >/dev/null; then
-            stow -Dt "$HOME" "$dir"
-        else
-            find "$dir" ! -type d | while read -r del; do
-                rm -f "${del/$dir/$HOME}"
-            done
-            find "$dir" -type d | tac | while read -r del; do
-                [ -z "$(ls -A "${del/$dir/$HOME}" 2>/dev/null)" ] && \
-                    rm -rf "${del/$dir/$HOME}"
-            done
-        fi
+    for dir in */; do
+        # check if dir not empty, submodule not initialized?
+        [ "$(find "$dir" -mindepth 1 | wc -l)" -le 0 ] && continue
+
+        find "$dir" ! -type d | while read -r del; do
+            rm -f "${del/$dir/$HOME}"
+        done
+        find "$dir" -type d | tac | while read -r del; do
+            [ -z "$(ls -A "${del/$dir/$HOME}" 2>/dev/null)" ] && \
+                rm -rf "${del/$dir/$HOME}"
+        done
         echo
     done
 }
 
 _pull() {
     git pull --recurse-submodules
+}
+
+_sub() {
+    for dir in */; do
+        # check if submodule and not initialized
+        [[ "$(git submodule status "$dir")" != -* ]] && continue
+        # ask to initialize
+        read -rep "Initialize $dir submodule? [y/N] " install
+        [ "$install" = "${install#[Yy]}" ] && continue
+
+        git submodule --quiet update --init "$dir"
+        (cd "$dir" && git checkout -q master)
+    done
 }
 
 _set_ssh() {
@@ -71,6 +85,7 @@ case "$1" in
     install)    _install ;;
     uninstall)  _uninstall ;;
     pull)       _pull ;;
+    sub)        _sub ;;
     ssh)        _set_ssh ;;
     https)      _set_https ;;
     *)          _usage ;;

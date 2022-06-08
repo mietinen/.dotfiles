@@ -1,3 +1,8 @@
+[submodule "desktop"]
+	path = desktop
+	url = ../.dot-desktop.git
+	update = merge
 [submodule "private"]
 	path = private
-	url = ../private.git
+	url = ../.dot-private.git
+	update = merge
