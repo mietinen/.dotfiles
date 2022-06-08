@@ -7,15 +7,6 @@ command -v nvim >/dev/null && alias vim='nvim' vimdiff='nvim -d'
 command -v vim >/dev/null && alias vi='vim'
 
 # ------------------------------------------------------------------------------
-# Dotfiles
-# ------------------------------------------------------------------------------
-alias   sgit='git --git-dir="$HOME/.dotfiles/shell" --work-tree="$HOME"' \
-        dgit='git --git-dir="$HOME/.dotfiles/desktop" --work-tree="$HOME"'
-
-alias   slazygit='lazygit --git-dir="$HOME/.dotfiles/shell" --work-tree="$HOME"' \
-        dlazygit='lazygit --git-dir="$HOME/.dotfiles/desktop" --work-tree="$HOME"'
-
-# ------------------------------------------------------------------------------
 # Package stuff
 # ------------------------------------------------------------------------------
 alias   pactable='expac -Q -H M --timefmt="%Y-%m-%d %T" "%l  %-12w  %-15m  %n (%v)"' \
