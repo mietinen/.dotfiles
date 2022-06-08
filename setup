@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+
+url_ssh="git@github.com:mietinen/.dotfiles.git"
+url_https="https://github.com/mietinen/.dotfiles.git"
+dot_dirs=(shell desktop private)
+
+_usage() {
+    cat <<EOF
+optional args:
+  ${0} install        Install dotfiles
+  ${0} uninstall      Uninstall dotfiles
+  ${0} pull           Git pull with submodule
+  ${0} ssh            change git origin to use SSH
+  ${0} https          Change git origin to use HTTPS
+EOF
+}
+
+_install() {
+    for dir in "${dot_dirs[@]}"; do
+        read -rep "Install $dir config files? [y/N] " install
+        [ "$install" = "${install#[Yy]}" ] && continue
+        if [[ "$(git submodule status "$dir")" == -* ]]; then
+            git submodule --quiet update --init "$dir"
+        fi
+        if command -v stow >/dev/null; then
+            stow -nt "$HOME" "$dir" 2>&1 | grep "^\s" | awk 'NF>1{print $NF}' | xargs -I{} rm -f "$HOME/{}"
+            stow -t "$HOME" "$dir"
+        else
+            cp -rfT "$dir" "$HOME"
+        fi
+        echo
+    done
+}
+
+_uninstall() {
+    for dir in "${dot_dirs[@]}"; do
+        read -rep "Uninstall $dir config files? [y/N] " install
+        [ "$install" = "${install#[Yy]}" ] && continue
+        if command -v stow >/dev/null; then
+            stow -Dt "$HOME" "$dir"
+        else
+            find "$dir" ! -type d | while read -r del; do
+                rm -f "${del/$dir/$HOME}"
+            done
+            find "$dir" -type d | tac | while read -r del; do
+                [ -z "$(ls -A "${del/$dir/$HOME}" 2>/dev/null)" ] && \
+                    rm -rf "${del/$dir/$HOME}"
+            done
+        fi
+        echo
+    done
+}
+
+_pull() {
+    git pull --recurse-submodules
+}
+
+_set_ssh() {
+    git remote set-url origin "$url_ssh"
+    git submodule sync --recursive
+    echo "Changed git remote to: $url_ssh"
+}
+
+_set_https() {
+    git remote set-url origin "$url_https"
+    git submodule sync --recursive
+    echo "Changed git remote to: $url_https"
+}
+
+case "$1" in
+    install)    _install ;;
+    uninstall)  _uninstall ;;
+    pull)       _pull ;;
+    ssh)        _set_ssh ;;
+    https)      _set_https ;;
+    *)          _usage ;;
+esac
