@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+ dot_dirs=(shell desktop)
+
+_install() {
+	stow -nt "$HOME" "$1" 2>&1 | grep "^\s" | awk 'NF>1{print $NF}' | xargs -I{} rm -f "$HOME/{}"
+	stow -t "$HOME" "$1"
+}
+
+_uninstall() {
+	stow -Dt "$HOME" "$1"
+}
+
+for dir in "${dot_dirs[@]}"; do
+    read -rep "Install $dir config directory? [y/N] " install
+    [ "$install" = "${install#[Yy]}" ] && continue
+    _install "$dir"
+    echo
+done

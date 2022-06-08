@@ -1,0 +1,73 @@
+#!/bin/sh
+
+# ------------------------------------------------------------------------------
+# Use neovim > vim > vi
+# ------------------------------------------------------------------------------
+command -v nvim >/dev/null && alias vim='nvim' vimdiff='nvim -d'
+command -v vim >/dev/null && alias vi='vim'
+
+# ------------------------------------------------------------------------------
+# Dotfiles
+# ------------------------------------------------------------------------------
+alias   sgit='git --git-dir="$HOME/.dotfiles/shell" --work-tree="$HOME"' \
+        dgit='git --git-dir="$HOME/.dotfiles/desktop" --work-tree="$HOME"'
+
+alias   slazygit='lazygit --git-dir="$HOME/.dotfiles/shell" --work-tree="$HOME"' \
+        dlazygit='lazygit --git-dir="$HOME/.dotfiles/desktop" --work-tree="$HOME"'
+
+# ------------------------------------------------------------------------------
+# Package stuff
+# ------------------------------------------------------------------------------
+alias   pactable='expac -Q -H M --timefmt="%Y-%m-%d %T" "%l  %-12w  %-15m  %n (%v)"' \
+        pacdate='pactable | sort -n' \
+        pacsize='pactable | sort -hk 4' \
+        pacdep='expac -Q "%-25n\t%D"' \
+        pacclean='sudo pacman -Rnsu $(pacman -Qtdq)' \
+        updmirror='reflector -a 48 -c no,se,dk,fi,de,nl,be,fr,pl,au,gb -p http,https --sort country | sudo tee /etc/pacman.d/mirrorlist'
+
+# ------------------------------------------------------------------------------
+# Old tmux stuff for Ubuntu
+# ------------------------------------------------------------------------------
+command -v tmux >/dev/null && [ "$(tmux -V | tr -cd "[:digit:]")" -lt 31 ] && \
+    alias tmux='tmux -f "${XDG_CONFIG_HOME:-$HOME/.config}/tmux/tmux.conf"'
+
+# ------------------------------------------------------------------------------
+# Add colors
+# ------------------------------------------------------------------------------
+alias   ls='ls -hN --color=auto --group-directories-first' \
+        grep='grep --colour=auto' \
+        egrep='egrep --colour=auto' \
+        fgrep='fgrep --colour=auto' \
+        diff='diff --color=auto' \
+        ip='ip --color=auto'
+
+# ------------------------------------------------------------------------------
+# Stuff
+# ------------------------------------------------------------------------------
+alias   cp='cp -i' \
+        df='df -h' \
+        du='du -h' \
+        more='less' \
+        sudovimdiff='SUDO_EDITOR=vimdiff sudoedit' \
+        notes='vim -c WikiIndex' \
+        wget='curl -OJLR' \
+        nettfart='speedtest -s 20209' \
+        startx='startx ~/.xinitrc' \
+        nnn='nnn -de' \
+        n='n -de' \
+        xod='od --endian=big -t x2z' \
+        newsboat='newsboat -q'
+
+# ------------------------------------------------------------------------------
+# Directories and config shortcuts
+# ------------------------------------------------------------------------------
+cdf() {
+    b="$(bookmarks dir "$1")"
+    [ -d "$b" ] && cd "$b"
+}
+cff() {
+    b="$(bookmarks file "$1")"
+    [ -f "$b" ] && sensible-editor "$b"
+}
+
+# vim: set ts=4 sw=4 tw=0 et :

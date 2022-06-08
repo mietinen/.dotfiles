@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+# Source bookmarks
+. "${XDG_CONFIG_HOME:-$HOME/.config}/shell/bookmarks" 2>/dev/null
+
+case "$1" in
+    file)
+        # Config files, include hidden files
+        shopt -s dotglob
+        for b in ${bm_files[@]}; do
+            [ -f "$b" ] && echo "$b"
+        done | fzf --query="$2" ;;
+    dir)
+        # Directories, exclude hidden directories
+        for b in ${bm_dirs[@]}; do
+            [ -d "$b" ] && echo "$b"
+        done | fzf --query="$2" ;;
+    *) exit 0 ;;
+esac

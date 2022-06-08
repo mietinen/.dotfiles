@@ -1,0 +1,11 @@
+#!/bin/sh
+# Start/switch/attach tmux with irc client
+
+session="IRC"
+command="weechat"
+
+tmux new -As "$session" $command 2>/dev/null && exit 0
+tmux new -ds "$session" $command 2>/dev/null
+tmux switchc -t "$session" 2>/dev/null
+
+# vim: set ts=4 sw=4 tw=0 et :

@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+
+. "${XDG_CONFIG_HOME:-$HOME/.config}/shell/bookmarks" 2>/dev/null
+chosen="$(for b in ${bm_files[@]} ; do [ -f "$b" ] && echo "$b" ; done | rofi -i -dmenu -p 'Edit file: ')"
+eval file="$chosen"
+[ -f "$file" ] && setsid sensible-terminal -e sensible-editor "$file"
