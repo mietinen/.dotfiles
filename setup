@@ -18,13 +18,11 @@ EOF
 _install() {
     if ! command -v stow >/dev/null; then
         echo "GNU Stow is not found, files will be copied to \$HOME instead."
-        echo
+        read -rep "Continue with install? [y/N] " install
+        [ "$install" = "${install#[Yy]}" ] && return
     fi
     git pull --quiet --recurse-submodules
     for dir in */; do
-        # check if dir not empty, submodule not initialized?
-        [ "$(find "$dir" -mindepth 1 | wc -l)" -le 0 ] && continue
-
         if command -v stow >/dev/null; then
             stow -nt "$HOME" "$dir" 2>&1 | grep "^\s" | awk 'NF>1{print $NF}' | xargs -I{} rm -f "$HOME/{}"
             stow -t "$HOME" "$dir"
@@ -32,23 +30,18 @@ _install() {
             cp -rfT "$dir" "$HOME"
             rm -f "$HOME/.git" 2>/dev/null
         fi
-        echo
     done
 }
 
 _uninstall() {
     for dir in */; do
-        # check if dir not empty, submodule not initialized?
-        [ "$(find "$dir" -mindepth 1 | wc -l)" -le 0 ] && continue
-
-        find "$dir" ! -type d | while read -r del; do
+        find "$dir" -mindepth 1 ! -type d | while read -r del; do
             rm -f "${del/$dir/$HOME}"
         done
-        find "$dir" -type d | tac | while read -r del; do
+        find "$dir" -mindepth 1 -type d | tac | while read -r del; do
             [ -z "$(ls -A "${del/$dir/$HOME}" 2>/dev/null)" ] && \
                 rm -rf "${del/$dir/$HOME}"
         done
-        echo
     done
 }
 
