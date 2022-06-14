@@ -7,13 +7,19 @@ vim.cmd('source ' .. vim.fn.expand('<sfile>:p:h') .. '/vimrc')
 -- nvim-lspconfig
 -- -----------------------------------------------------------------------------
 local lsp_ok, lsp = pcall(require, 'lspconfig')
+local function lsp_setup(server, config)
+    local cmd = config.cmd or lsp[server].document_config.default_config.cmd
+    if lsp.util.has_bins(cmd[1]) then
+        lsp[server].setup(config)
+    end
+end
+
 if lsp_ok then
-    -- pacman -S gopls rust-analyzer bash-language-server pyright lua-language-server
-    lsp.gopls.setup {}
-    lsp.rust_analyzer.setup {}
-    lsp.bashls.setup {}
-    lsp.pyright.setup {}
-    lsp.sumneko_lua.setup {
+    lsp_setup('gopls', {})
+    lsp_setup('rust_analyzer', {})
+    lsp_setup('bashls', {})
+    lsp_setup('pyright', {})
+    lsp_setup('sumneko_lua', {
         settings = {
             Lua = {
                 runtime = { version = 'LuaJIT', path = vim.split(package.path, ';'), },
@@ -24,7 +30,7 @@ if lsp_ok then
                 workspace = { library = vim.api.nvim_get_runtime_file("", true), },
             },
         },
-    }
+    })
 end
 
 -- -----------------------------------------------------------------------------
