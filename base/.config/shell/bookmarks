@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # ------------------------------------------------------------------------------
 # XDG user dirs
@@ -10,6 +10,7 @@
 # ------------------------------------------------------------------------------
 bm_dirs=(
     "$HOME"
+    "$HOME/.dotfiles"
     "${XDG_DOCUMENTS_DIR:-$HOME/Documents}"
     "${XDG_DOCUMENTS_DIR:-$HOME/Documents}/*"
     "${XDG_DOCUMENTS_DIR:-$HOME/Documents}/code/*"
