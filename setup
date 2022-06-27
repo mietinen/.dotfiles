@@ -16,32 +16,37 @@ EOF
 }
 
 _install() {
-    if ! command -v stow >/dev/null; then
+    if command -v stow >/dev/null; then
+        git pull --quiet --recurse-submodules
+        for dir in */; do
+            stow -nt "$HOME" "$dir" 2>&1 | grep "^\s" | awk 'NF>1{print $NF}' | xargs -I{} rm -f "$HOME/{}"
+            stow -t "$HOME" "$dir"
+        done
+    else
         echo "GNU Stow is not found, files will be copied to \$HOME instead."
         read -rep "Continue with install? [y/N] " install
         [ "$install" = "${install#[Yy]}" ] && return
-    fi
-    git pull --quiet --recurse-submodules
-    for dir in */; do
-        if command -v stow >/dev/null; then
-            stow -nt "$HOME" "$dir" 2>&1 | grep "^\s" | awk 'NF>1{print $NF}' | xargs -I{} rm -f "$HOME/{}"
-            stow -t "$HOME" "$dir"
-        else
+        git pull --quiet --recurse-submodules
+        for dir in */; do
             cp -rfT "$dir" "$HOME"
             rm -f "$HOME/.git" 2>/dev/null
-        fi
-    done
+        done
+    fi
 }
 
 _uninstall() {
     for dir in */; do
-        find "$dir" -mindepth 1 ! -type d | while read -r del; do
-            rm -f "${del/$dir/$HOME}"
-        done
-        find "$dir" -mindepth 1 -type d | tac | while read -r del; do
-            [ -z "$(ls -A "${del/$dir/$HOME}" 2>/dev/null)" ] && \
-                rm -rf "${del/$dir/$HOME}"
-        done
+        if command -v stow >/dev/null; then
+            stow -Dt "$HOME" "$dir"
+        else
+            find "$dir" -mindepth 1 ! -type d | while read -r del; do
+                rm -f "${del/$dir/$HOME}"
+            done
+            find "$dir" -mindepth 1 -type d | tac | while read -r del; do
+                [ -z "$(ls -A "${del/$dir/$HOME}" 2>/dev/null)" ] && \
+                    rm -rf "${del/$dir/$HOME}"
+            done
+        fi
     done
 }
 
