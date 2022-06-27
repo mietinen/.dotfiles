@@ -38,6 +38,7 @@ alias   ls='ls -hN --color=auto --group-directories-first' \
 alias   cp='cp -i' \
         df='df -h' \
         du='du -h' \
+        rg='rg --follow' \
         more='less' \
         sudovimdiff='SUDO_EDITOR=vimdiff sudoedit' \
         notes='vim -c WikiIndex' \

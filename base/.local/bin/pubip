@@ -20,7 +20,7 @@ hosts=(
 # Logfile
 logfile="${XDG_STATE_HOME:-$HOME/.local/state}/pubip/log"
 if [ ! -f "$logfile" ]; then
-    mkdir -p ${logfile%/*} 
+    mkdir -p "${logfile%/*}"
     touch "$logfile"
 fi
 

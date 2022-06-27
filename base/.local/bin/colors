@@ -5,14 +5,14 @@ colors_big() {
     printf " %-4s" {40..47} "NA"
     echo
     for fg in {30..37}; do
-        num="$(($fg - 30))"
+        num="$((fg - 30))"
         for bold in {0..1}; do
             if [ "$bold" = "0" ] ; then
-                printf "  %s " $fg
+                printf "  %s " "$fg"
                 xrdbcolor="$num"
             else
-                printf "%s;%s " $bold $fg
-                xrdbcolor="$(($num + 8))"
+                printf "%s;%s " "$bold" "$fg"
+                xrdbcolor="$((num + 8))"
             fi
             for bg in {40..47}; do
                 printf "\e[%s;%s;%sm %02d \e[0m " "$bold" "$fg" "$bg" "$xrdbcolor"
@@ -39,7 +39,7 @@ colors_small() {
     echo
 }
 
-case $(($RANDOM % 2)) in
+case $((RANDOM % 2)) in
     1) colors_big ;;
     *) colors_small ;;
 esac

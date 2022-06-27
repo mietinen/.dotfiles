@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # Installed kernels in /boot
 ondisk="$(file /boot/vmlinuz* | sed 's/.*version \([^ ]*\)[ ]*.*/\1/')"
