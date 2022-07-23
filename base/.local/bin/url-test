@@ -22,7 +22,7 @@ echo
 
 output=""
 for h in "${urls[@]}"; do
-    time=$(curl -Lo /dev/null --connect-timeout 5 -s -w "%{time_connect} %{time_starttransfer} %{time_total}" "$h")
+    time=$(curl -Lkso /dev/null --connect-timeout 5 -w "%{time_connect} %{time_starttransfer} %{time_total}" "$h")
     if [ $? -eq 0 ] ; then
         output="${output:+${output}\n}$h $time"
     else

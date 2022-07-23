@@ -4,6 +4,7 @@
 .ICAClient
 .config/shell/.zcompdump
 
+.dotfiles/
 .cargo/
 .cache/
 .mozilla/

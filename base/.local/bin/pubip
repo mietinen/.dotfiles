@@ -12,7 +12,6 @@ hosts=(
     https://ifconfig.me
     https://ipecho.net/plain
     https://wgetip.com
-    https://bot.whatismyipaddress.com
     https://ipinfo.io/ip
     https://api.ipify.org
 )
@@ -27,7 +26,7 @@ fi
 # Get public IP address
 pub_update() {
     for h in $(shuf -e "${hosts[@]}"); do
-        pubip="$(curl -s -4 --insecure --connect-timeout 5 "$h")"
+        pubip="$(curl -Lks4 --connect-timeout 5 "$h")"
         # ipv4: ^([0-9]{1,3}\.){3}[0-9]{1,3}$
         # ipv6: ^([0-9a-f]{0,4}:){1,7}[0-9a-f]{1,4}$
         # both: ^(([0-9a-f]{0,4}:){1,7}[0-9a-f]{1,4}|([0-9]{1,3}\.){3}[0-9]{1,3})$

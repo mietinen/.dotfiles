@@ -17,7 +17,7 @@ EOF
 
 _install() {
     if command -v stow >/dev/null; then
-        git pull --quiet --recurse-submodules
+        _pull --quiet
         for dir in */; do
             stow -nt "$HOME" "$dir" 2>&1 | grep "^\s" | awk 'NF>1{print $NF}' | xargs -I{} rm -f "$HOME/{}"
             stow -t "$HOME" "$dir"
@@ -26,7 +26,7 @@ _install() {
         echo "GNU Stow is not found, files will be copied to \$HOME instead."
         read -rep "Continue with install? [y/N] " install
         [ "$install" = "${install#[Yy]}" ] && return
-        git pull --quiet --recurse-submodules
+        _pull --quiet
         for dir in */; do
             cp -rfT "$dir" "$HOME"
             rm -f "$HOME/.git" 2>/dev/null
@@ -51,7 +51,7 @@ _uninstall() {
 }
 
 _pull() {
-    git pull --recurse-submodules
+    git pull --recurse-submodules "$@"
 }
 
 _sub() {
