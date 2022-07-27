@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+for dir in */; do
+    # check if submodule and not initialized
+    [[ "$(git submodule status "$dir")" != -* ]] && continue
+    # ask to initialize
+    read -rep "Initialize $dir submodule? [y/N] " install
+    [ "$install" = "${install#[Yy]}" ] && continue
+
+    git submodule --quiet update --init "$dir"
+    (cd "$dir" && git checkout -q master)
+done

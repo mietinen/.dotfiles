@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+url_ssh="git@github.com:mietinen/.dotfiles.git"
+url_https="https://github.com/mietinen/.dotfiles.git"
+
+case "$1" in
+    ssh)
+        git remote set-url origin "$url_ssh"
+        git submodule sync --recursive
+        echo "Changed git remote to: $url_ssh" ;;
+    https)
+        git remote set-url origin "$url_https"
+        git submodule sync --recursive
+        echo "Changed git remote to: $url_https" ;;
+    *)
+        echo "optional args:"
+        echo "  ${0} ssh    change git remote origin to use SSH"
+        echo "  ${0} https  Change git remote origin to use HTTPS" ;;
+esac

@@ -12,8 +12,13 @@ git clone https://github.com/mietinen/.dotfiles ~/.dotfiles
 git clone git@github.com:mietinen/.dotfiles.git ~/.dotfiles
 ```
 
-Then run the install script:
-```sh
-cd ~/.dotfiles
-./setup install
-```
+Enter the ~/.dotfiles directory and run the install script: `./install`
+
+
+Other commands
+----------------------------------------
+
+* `./uninstall` to uninstall dotfiles
+* `./submodule` to initialize submodules
+* `./remote ssh` change git remote origin to use SSH
+* `./remote https` Change git remote origin to use HTTPS
